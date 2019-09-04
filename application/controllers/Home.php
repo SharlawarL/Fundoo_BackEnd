@@ -92,7 +92,7 @@ class Home extends CI_Controller {
 
             // $this->objOfJwt->GenerateToken($id);
             $title = "Verify E-mail";
-            $msg = "click below to verify mail... \n\n http://localhost/week-7/index.php/Email/index/".$id;
+            $msg = "click below to verify mail... \n\n http://localhost/Fundoo_BackEnd/User/Reset_password/".$id;
 			
 	        //passing data for rabbit-mq
             Rabbitmq::Add_to_RabbitMq($user,$title,$msg);

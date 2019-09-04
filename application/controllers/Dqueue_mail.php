@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-require APPPATH.'/libraries/implementJWT.php';
 require_once __DIR__.'/vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPConnection;
@@ -13,7 +12,6 @@ class Dqueue_mail extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
 		$this->load->helper('url');
-		$this->objOfJwt = new ImplementJwt();
 	}
     public function index()
     {
