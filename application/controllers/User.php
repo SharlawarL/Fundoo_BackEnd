@@ -9,14 +9,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require 'Rabbitmq.php';
 require APPPATH.'/libraries/JWT.php';
 
-class Home extends CI_Controller {
+class User extends CI_Controller {
     private $table_name;
+    PRIVATE $key;
 
     public function __construct(){
 		parent::__construct();
 		$this->load->database();
         $this->load->model('User_model');
         $this->table_name = 'user';
+        $this->key ="JWT_Token";
 	}
 
 	public function index()
@@ -65,7 +67,7 @@ class Home extends CI_Controller {
 
 
     // For Registration of user
-    function register(){
+    function Register(){
         $this->load->library('form_validation');
 
         // Data Will to retrive from frond end.
@@ -88,11 +90,11 @@ class Home extends CI_Controller {
             $id = $this->User_model->get_ID($this->table_name,$User_data);
 
             //creating JWT token
-            $jwtToken = JWT::encode($id, '');
+            $jwtToken = JWT::encode($id, $this->key);
 
             // $this->objOfJwt->GenerateToken($id);
             $title = "Verify E-mail";
-            $msg = "click below to verify mail... \n\n http://localhost/week-7/index.php/Email/index/".$id;
+            $msg = "click below to verify mail... \n\n http://localhost/Fundoo_BackEnd/User/Verify_mail/".$jwtToken;
 			
 	        //passing data for rabbit-mq
             Rabbitmq::Add_to_RabbitMq($user,$title,$msg);
@@ -104,6 +106,24 @@ class Home extends CI_Controller {
         }else{
             $response = $this->form_validation->error_array();
             echo json_encode($response);
+        }
+    }
+
+    // Verify Mail
+    function Verify_mail($mail){
+        //Decoding the JWT Token
+        $jwtToken_decode = JWT::decode($mail, $this->key, array('HS256'));
+        $decodedData = (array) $jwtToken_decode;
+
+        //updating the email verify value
+        $result = $this->User_model->update_mail_status($this->table_name,$decodedData['0']);
+        if($result)
+        {
+            // Success message shown into Login Page
+            header('Location: http://localhost:4200/login?success=true');
+        }else{
+            // Failed message shown into Login Page
+            header('Location: http://localhost:4200/login?success=false');
         }
     }
 
@@ -119,7 +139,7 @@ class Home extends CI_Controller {
         if($this->form_validation->run('forgot')){
 
             //send data to the token genration
-            $jwtToken = JWT::encode($User_data, 'resetToken');
+            $jwtToken = JWT::encode($User_data, $this->key);
 
             // create message to send user
             $title = "Forgot Password";
@@ -146,7 +166,7 @@ class Home extends CI_Controller {
         //json_decode(file_get_contents('php://input'),true);
         if($User_data){
             //send data to the token genration
-            $jwtToken = JWT::decode($User_data['resetToken'], 'resetToken', array('HS256'));
+            $jwtToken = JWT::decode($User_data['resetToken'], $this->key, array('HS256'));
             $decodedData = (array) $jwtToken;
 
             

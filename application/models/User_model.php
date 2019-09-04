@@ -1,5 +1,4 @@
 <?php
-
 class User_model extends CI_Model {
 
     //check for the login user
@@ -13,6 +12,14 @@ class User_model extends CI_Model {
     //inserting User into the table
     function insert_user($table_name,$data){
         $result = $this->db->insert($table_name,$data);
+    }
+
+    //verify mail
+    function update_mail_status($table_name,$User_id){
+        $this->db->set('email_verify', '1');
+        $this->db->where('id', $User_id);
+        $result = $this->db->update($table_name); 
+        return $result;
     }
 
     //getting perticular user ID
