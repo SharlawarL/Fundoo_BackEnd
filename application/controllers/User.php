@@ -137,36 +137,48 @@ class User extends CI_Controller {
 
         //json_decode(file_get_contents('php://input'),true);
         if($this->form_validation->run('forgot')){
+            $User_mail = $this->input->post('email');
+        
+            //check user is present
+            if(!$this->User_model->check_user($this->table_name,$User_data))
+            {
+                $response = array("email"=>'Your are note user of this site... Please register');
+                echo json_encode($response);
+            }else{
 
             //send data to the token genration
-            $jwtToken = JWT::encode($User_data, $this->key);
+            $jwtToken = JWT::encode($User_mail, $this->key);
 
             // create message to send user
             $title = "Forgot Password";
             $msg = "click below to forgot password mail...  \n \n http://localhost:4200/reset?token=".$jwtToken;
     
             //passing data for rabbit-mq
-            Rabbitmq::Add_to_RabbitMq($User_data['email'],$title,$msg);
+            Rabbitmq::Add_to_RabbitMq($User_mail,$title,$msg);
            
             $data['success'] = true;
             $data['message'] = 'wel come to admin';
             echo json_encode($data);
+            }
         }else{
             $response = $this->form_validation->error_array();
             echo json_encode($response);
         }
     }
 
+    // for reset password
     public function Reset_password(){
+        $this->load->library('form_validation');
+
        
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
 
         //json_decode(file_get_contents('php://input'),true);
-        if($User_data){
+        if($this->form_validation->run('Reset')){
             //send data to the token genration
-            $jwtToken = JWT::decode($User_data['resetToken'], $this->key, array('HS256'));
+            $jwtToken = JWT::decode($this->input->post('resetToken'), $this->key, array('HS256'));
             $decodedData = (array) $jwtToken;
 
             
@@ -174,14 +186,13 @@ class User extends CI_Controller {
             $firstname = $decodedData['firstname'];
 
             //QUery for update the password
-            $query= $this->User_model->reset_password($this->table_name,$decodedData,$User_data['new_password']);
+            $query= $this->User_model->reset_password($this->table_name,$decodedData,$User_data = $this->input->post('password'));
 
             if($query)
             {
                 $data['success'] = true;
                 $data['message'] = 'Password will be changed... Now you can Login..';
                 $data_value = json_encode($data);
-
                 //print for return json type data
                echo $data_value;
 
@@ -196,12 +207,33 @@ class User extends CI_Controller {
             }
             
         }else{
-            $data['success'] = false;
-            $data['message'] = 'Empty values';
-            $data_value = json_encode($data);
-                
-            //print for return json type data
-            echo $data_value;
+            $response = $this->form_validation->error_array();
+            echo json_encode($response);
         }
     }
+    
+    //for checking token for valid reset password user
+    function check_reset_token(){
+
+        // Data Will to retrive from frond end.
+        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$User_data = $this->input->post();
+
+        $token = $this->input->post('token');
+
+        //decode the token
+        $jwtToken_decode = JWT::decode($this->input->post('token'), $this->key, array('HS256'));
+        $decodedData = (array) $jwtToken_decode;    
+
+            if($this->User_model->check_user($this->table_name,$decodedData)){
+                $data['check_user'] = true;
+                echo json_encode($data);
+
+            }else{
+                $data['check_user'] = false;
+                echo json_encode($data);
+            }
+
+    }
+
 }

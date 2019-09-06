@@ -37,6 +37,25 @@ class User_model extends CI_Model {
         }
     }
 
+    //check user
+    public function check_user($table_name,$User_data)
+    {
+        // $this->db->select('*');
+        // $this->db->where($User_email);
+        // $this->db->from($table_name);
+        //$this->db->get($table_name);
+        $email = $User_data['email'];
+        //print_r($User_data);
+        //$email = $User_email['firstname'];
+        //$query =  $this->db->get_where($table_name,$email);
+        $query = $this->db->query("select * from ".$table_name." where `email`='".$email."'");
+        
+        foreach ($query->result() as $row)
+        {
+            return $row->id;
+        }
+    }
+
     //for reset password
     public function reset_password($table_name,$data,$new_password){
         $this->db->set('password', $new_password);

@@ -25,31 +25,43 @@ $config = array(
                 'rules' => 'required|min_length[3]'
         ),
         array(
-            'field' => 'email',
-            'label' => 'Email',
-            'rules' => 'required|valid_email'
+                'field' => 'email',
+                'label' => 'Email',
+                'rules' => 'required|valid_email'
         ),
         array(
-            'field' => 'password',
-            'label' => 'Password',
-            'rules' => 'required'
+                'field' => 'password',
+                'label' => 'Password',
+                'rules' => 'required'
         ),
         array(
-        'field' => 'passwordcc',
-        'label' => 'Conform Password',
-        'rules' => 'required|matches[password]'
+                'field' => 'passwordcc',
+                'label' => 'Conform Password',
+                'rules' => 'required|matches[password]'
         )
         ),
         'forgot' => array(
-            array(
+                array(
                     'field' => 'email',
                     'label' => 'Email',
                     'rules' => 'required|valid_email'
-            ),
-            array(
-                    'field' => 'firstname',
-                    'label' => 'Firstname',
-                    'rules' => 'required|alpha'
-            )
+                ),
+                array(
+                        'field' => 'firstname',
+                        'label' => 'Firstname',
+                        'rules' => 'required|alpha'
+                )
+        ),
+        'Reset' => array(
+                array(
+                        'field' => 'password',
+                        'label' => 'Password',
+                        'rules' => 'required'
+                ),
+                array(
+                        'field' => 'passwordcc',
+                        'label' => 'Conform Password',
+                        'rules' => 'required|matches[password]'
+                )
         ),
 );
