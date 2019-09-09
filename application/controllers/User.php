@@ -39,26 +39,29 @@ class User extends CI_Controller {
         //validate user
         if($this->form_validation->run('login'))
         {
+            //check user is present
+            if(!$this->User_model->check_user($this->table_name,$User_data))
+            {
+                $response = array("email"=>"Account doesn't exits");
+                echo json_encode($response);
+            }else{
             //passing for the check user present into database.
             $check_user = $this->User_model->login_user($this->table_name,$User_data);
-           
+            
+            $Token = JWT::encode($check_user, $this->key);
+            
             //if the user present
             if($check_user)
             {
-                $data['success'] = true;
-                $data['message'] = 'wel come to admin';
-                $data_value = json_encode($data);
-
-                //print for return json type data
-                echo $data_value;
+                $response['success'] = true;
+                $response['Token'] = $Token;
+                //$response = array("Token"=>$token);
+                echo json_encode($response);
             }else{
-                $data['success'] = false;
-                $data['message'] = 'Username password incorrect';
-                $data_value = json_encode($data);
-
-                //print for return json type data
-                echo $data_value;
+                $response = array("password"=>"password is incorrect");
+                echo json_encode($response);
             }
+        }
     }else{
         $response = $this->form_validation->error_array();
         echo json_encode($response);
@@ -235,5 +238,20 @@ class User extends CI_Controller {
             }
 
     }
+
+    //retriving User data
+    function Get_User(){
+        //getiing datat from the angular
+        $this->key ="JWT_Token";
+        $token = $this->input->get('token',true);
+        
+        $jwtToken_decode = JWT::decode($token, $this->key, array('HS256'));
+        $id = (array) $jwtToken_decode;
+
+        //getting from database
+        $User = $this->User_model->get_user_details($id[0]);
+        $Json = json_encode($User);
+        print_r($Json);
+    }  
 
 }

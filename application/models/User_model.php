@@ -2,11 +2,14 @@
 class User_model extends CI_Model {
 
     //check for the login user
-    function login_user($table_name,$data){
-        $this->db->select('*');
-        $this->db->from($table_name);
-        $result = $this->db->Where($data);
-        return $result;
+    function login_user($table_name,$User_data){
+
+        $query =  $this->db->get_where($table_name,$User_data);
+        
+        foreach ($query->result() as $row)
+        {
+            return $row->id;
+        }
     }
 
     //inserting User into the table
@@ -25,10 +28,6 @@ class User_model extends CI_Model {
     //getting perticular user ID
     public function get_ID($table_name,$data)
     {
-        // $this->db->select('*');
-        // $this->db->from($table_name);
-        
-        //$this->db->get($table_name);
         $query =  $this->db->get_where($table_name,$data);
 
         foreach ($query->result() as $row)
@@ -40,14 +39,7 @@ class User_model extends CI_Model {
     //check user
     public function check_user($table_name,$User_data)
     {
-        // $this->db->select('*');
-        // $this->db->where($User_email);
-        // $this->db->from($table_name);
-        //$this->db->get($table_name);
         $email = $User_data['email'];
-        //print_r($User_data);
-        //$email = $User_email['firstname'];
-        //$query =  $this->db->get_where($table_name,$email);
         $query = $this->db->query("select * from ".$table_name." where `email`='".$email."'");
         
         foreach ($query->result() as $row)
@@ -61,6 +53,13 @@ class User_model extends CI_Model {
         $this->db->set('password', $new_password);
         $this->db->where($data);
         return $this->db->update($table_name);
+    }
+
+    // get user details
+    function get_user_details($id){
+        $this->db->where('id',$id);
+        $Notes = $this->db->get('user');
+        return $Notes->result_array();
     }
 
 
