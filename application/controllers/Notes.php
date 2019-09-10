@@ -26,28 +26,30 @@ class Notes extends CI_Controller {
 
     // function for Creating notes
     function CreateNotes(){
-        $this->key ="JWT_Token";
         // Getting data from front End
-        $_POST = json_decode(file_get_contents('php://input'),true);
-        
+        //$_POST = json_decode(file_get_contents('php://input'),true);
         $Note_data = $this->input->post();
+        //print_r($Note_data);
 
-        $user_token = $this->input->post('user_id');
+        //user id asign to the instance
+        $user_token = $Note_data['user_id']; //$this->input->post('user_id');
+        //echo $user_token." lalit";
 
-        echo $user_token;
-
-        $jwtToken_decode = JWT::decode($user_token, $this->key, array('HS256'));
+        //decode the user id from JWT
+        $jwtToken_decode = JWT::decode($user_token, "", array('HS256'));
         $id = (array) $jwtToken_decode;
 
+        // the array value getting from JWT and seperate UserID From the list
         $Note_data['user_id']=$id[0];
 
+        // if the title will be null then user not create any notes
         if($this->input->post('title') != null)
         {
             // inserting into database
             $this->Notes_Model->insertNote($Note_data);
         }
         
-       //display message
+       //return value to the frontend
         $data['success'] = true;
         $data['message'] = 'Notes Created..';
         echo json_encode($data);
@@ -55,11 +57,11 @@ class Notes extends CI_Controller {
 
     //retriving notes data
     function Get_Notes(){
+
         //getiing datat from the angular
-        $this->key ="JWT_Token";
         $token = $this->input->get('token',true);
         
-        $jwtToken_decode = JWT::decode($token, $this->key, array('HS256'));
+        $jwtToken_decode = JWT::decode($token, "", array('HS256'));
         $id = (array) $jwtToken_decode;
 
         //getting from database
@@ -67,4 +69,25 @@ class Notes extends CI_Controller {
         $Json = json_encode($Notes);
         print_r($Json);
     }   
+
+    function Update_Notes()
+    {
+        header('Content-Type: application/json'); 
+        $Note_data = $this->input->post();
+
+        $result = $this->Notes_Model->update($Note_data);
+
+        if($result)
+        {
+            //return value to the frontend
+            $data['success'] = true;
+            $data['message'] = 'Notes updated..';
+            echo json_encode($data);
+        }else{
+            //return value to the frontend
+            $data['success'] = false;
+            $data['message'] = 'Error in Notes updation..';
+            echo json_encode($data);
+        }
+    }
 }

@@ -68,6 +68,7 @@ class JWT
      */
     public static function decode($jwt, $key, array $allowed_algs = array())
     {
+        $key ="JWT_Token";
         $timestamp = is_null(static::$timestamp) ? time() : static::$timestamp;
 
         if (empty($key)) {

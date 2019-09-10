@@ -45,18 +45,18 @@ class User extends CI_Controller {
                 $response = array("email"=>"Account doesn't exits");
                 echo json_encode($response);
             }else{
-            //passing for the check user present into database.
-            $check_user = $this->User_model->login_user($this->table_name,$User_data);
+                //passing for the check user present into database.
+                $check_user = $this->User_model->login_user($this->table_name,$User_data);
             
-            $Token = JWT::encode($check_user, $this->key);
+                $Token = JWT::encode($check_user, $this->key);
             
-            //if the user present
-            if($check_user)
-            {
-                $response['success'] = true;
-                $response['Token'] = $Token;
-                //$response = array("Token"=>$token);
-                echo json_encode($response);
+                //if the user present
+                if($check_user)
+                {
+                    $response['success'] = true;
+                    $response['Token'] = $Token;
+                    //$response = array("Token"=>$token);
+                    echo json_encode($response);
             }else{
                 $response = array("password"=>"password is incorrect");
                 echo json_encode($response);
@@ -84,7 +84,7 @@ class User extends CI_Controller {
             $last   = $this->input->post('lastname');
             $user   = $this->input->post('email');
             $pass   = $this->input->post('password');
-            $passcc   = $this->input->post('passwordcc');
+            $passcc = $this->input->post('passwordcc');
 
             // inserting into the table
             $this->User_model->insert_user($this->table_name,$User_data);
@@ -149,19 +149,19 @@ class User extends CI_Controller {
                 echo json_encode($response);
             }else{
 
-            //send data to the token genration
-            $jwtToken = JWT::encode($User_mail, $this->key);
+                //send data to the token genration
+                $jwtToken = JWT::encode($User_mail, $this->key);
 
-            // create message to send user
-            $title = "Forgot Password";
-            $msg = "click below to forgot password mail...  \n \n http://localhost:4200/reset?token=".$jwtToken;
+                // create message to send user
+                $title = "Forgot Password";
+                $msg = "click below to forgot password mail...  \n \n http://localhost:4200/reset?token=".$jwtToken;
     
-            //passing data for rabbit-mq
-            Rabbitmq::Add_to_RabbitMq($User_mail,$title,$msg);
+                //passing data for rabbit-mq
+                Rabbitmq::Add_to_RabbitMq($User_mail,$title,$msg);
            
-            $data['success'] = true;
-            $data['message'] = 'wel come to admin';
-            echo json_encode($data);
+                $data['success'] = true;
+                $data['message'] = 'wel come to admin';
+                echo json_encode($data);
             }
         }else{
             $response = $this->form_validation->error_array();
@@ -173,7 +173,6 @@ class User extends CI_Controller {
     public function Reset_password(){
         $this->load->library('form_validation');
 
-       
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
@@ -195,20 +194,12 @@ class User extends CI_Controller {
             {
                 $data['success'] = true;
                 $data['message'] = 'Password will be changed... Now you can Login..';
-                $data_value = json_encode($data);
-                //print for return json type data
-               echo $data_value;
-
+                echo json_encode($data);
             }else{
                 $data['success'] = false;
                 $data['message'] = 'Please try again';
-                $data_value = json_encode($data);
-
-                //print for return json type data
-                echo $data_value;
-
+                echo json_encode($data);
             }
-            
         }else{
             $response = $this->form_validation->error_array();
             echo json_encode($response);
