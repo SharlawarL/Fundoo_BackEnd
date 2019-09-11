@@ -21,7 +21,7 @@ class Notes extends CI_Controller {
     }
     function index()
     {
-        echo "Welcome to notes";
+        $this->load->view('Home_page');
     }
 
     // function for Creating notes

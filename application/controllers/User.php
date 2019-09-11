@@ -19,6 +19,8 @@ class User extends CI_Controller {
         $this->load->model('User_model');
         $this->table_name = 'user';
         $this->key ="JWT_Token";
+        $this->load->library('redis');
+        
 	}
 
 	public function index()
@@ -39,12 +41,13 @@ class User extends CI_Controller {
         //validate user
         if($this->form_validation->run('login'))
         {
-            //check user is present
+            //check user account is exits
             if(!$this->User_model->check_user($this->table_name,$User_data))
             {
                 $response = array("email"=>"Account doesn't exits");
                 echo json_encode($response);
             }else{
+
                 //passing for the check user present into database.
                 $check_user = $this->User_model->login_user($this->table_name,$User_data);
             
@@ -53,25 +56,30 @@ class User extends CI_Controller {
                 //if the user present
                 if($check_user)
                 {
+                    // responce for the login successfull
                     $response['success'] = true;
                     $response['Token'] = $Token;
-                    //$response = array("Token"=>$token);
                     echo json_encode($response);
-            }else{
-                $response = array("password"=>"password is incorrect");
-                echo json_encode($response);
+                }else{
+                    //if the password is incurrect
+                    $response = array("password"=>"password is incorrect");
+                    echo json_encode($response);
+                }
             }
+        }else{
+            // this response for the form validation
+            $response = $this->form_validation->error_array();
+            echo json_encode($response);
         }
-    }else{
-        $response = $this->form_validation->error_array();
-        echo json_encode($response);
     }
-}
 
 
     // For Registration of user
     function Register(){
+        //load form validation library
         $this->load->library('form_validation');
+        //redis cache
+        $redis = $this->redis->config();
 
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
@@ -95,6 +103,9 @@ class User extends CI_Controller {
             //creating JWT token
             $jwtToken = JWT::encode($id, $this->key);
 
+            //store into redis cache
+            $redis->set($jwtToken,$jwtToken);
+
             // $this->objOfJwt->GenerateToken($id);
             $title = "Verify E-mail";
             $msg = "click below to verify mail... \n\n http://localhost/Fundoo_BackEnd/User/Verify_mail/".$jwtToken;
@@ -113,17 +124,40 @@ class User extends CI_Controller {
     }
 
     // Verify Mail
-    function Verify_mail($mail){
-        //Decoding the JWT Token
-        $jwtToken_decode = JWT::decode($mail, $this->key, array('HS256'));
-        $decodedData = (array) $jwtToken_decode;
+    function Verify_mail($token){
+        //redis cache
+        $redis = $this->redis->config();
 
-        //updating the email verify value
-        $result = $this->User_model->update_mail_status($this->table_name,$decodedData['0']);
-        if($result)
+        //get redies cache value
+        $get_token = $redis->get($token);
+        if($get_token != null)
+        {
+            if($get_token == $token)
+            {
+                //Decoding the JWT Token
+                $jwtToken_decode = JWT::decode($token, $this->key, array('HS256'));
+                $decodedData = (array) $jwtToken_decode;
+
+                //updating the email verify value
+                $result = $this->User_model->update_mail_status($this->table_name,$decodedData['0']);
+
+                if($result)
+                {
+                    $verification = true;
+                }else{
+                    $verification = false;
+                }    
+            }else{
+                $verification = false;
+            }
+        }else{
+            $verification = false;
+        }
+        // response of verification
+        if($verification)
         {
             // Success message shown into Login Page
-            header('Location: http://localhost:4200/login?success=true');
+            header('Location: http://localhost:4200/login?success=true');  
         }else{
             // Failed message shown into Login Page
             header('Location: http://localhost:4200/login?success=false');
@@ -152,6 +186,9 @@ class User extends CI_Controller {
                 //send data to the token genration
                 $jwtToken = JWT::encode($User_mail, $this->key);
 
+                //store into redis cache
+                $redis->set($jwtToken,$jwtToken);
+
                 // create message to send user
                 $title = "Forgot Password";
                 $msg = "click below to forgot password mail...  \n \n http://localhost:4200/reset?token=".$jwtToken;
@@ -176,33 +213,49 @@ class User extends CI_Controller {
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
+        $token = $this->input->post('resetToken');
 
-        //json_decode(file_get_contents('php://input'),true);
-        if($this->form_validation->run('Reset')){
-            //send data to the token genration
-            $jwtToken = JWT::decode($this->input->post('resetToken'), $this->key, array('HS256'));
-            $decodedData = (array) $jwtToken;
+        //redis cache
+        $redis = $this->redis->config();
 
-            
-            $email = $decodedData['email'];
-            $firstname = $decodedData['firstname'];
-
-            //QUery for update the password
-            $query= $this->User_model->reset_password($this->table_name,$decodedData,$User_data = $this->input->post('password'));
-
-            if($query)
+        //get redies cache value
+        $get_token = $redis->get($token);
+        if($get_token != null)
+        {
+            if($get_token == $token)
             {
-                $data['success'] = true;
-                $data['message'] = 'Password will be changed... Now you can Login..';
-                echo json_encode($data);
-            }else{
-                $data['success'] = false;
-                $data['message'] = 'Please try again';
-                echo json_encode($data);
+                //json_decode(file_get_contents('php://input'),true);
+                if($this->form_validation->run('Reset')){
+                    //send data to the token genration
+                    $jwtToken = JWT::decode($this->input->post('resetToken'), $this->key, array('HS256'));
+                    $decodedData = (array) $jwtToken;
+
+                    
+                    $email = $decodedData['email'];
+                    $firstname = $decodedData['firstname'];
+
+                    //QUery for update the password
+                    $query= $this->User_model->reset_password($this->table_name,$decodedData,$User_data = $this->input->post('password'));
+
+                    if($query)
+                    {
+                        $data['success'] = true;
+                        $data['message'] = 'Password will be changed... Now you can Login..';
+                        echo json_encode($data);
+                    }else{
+                        $data['success'] = false;
+                        $data['message'] = 'Please try again';
+                        echo json_encode($data);
+                    }
+                }else{
+                    $response = $this->form_validation->error_array();
+                    echo json_encode($response);
+                }
             }
         }else{
-            $response = $this->form_validation->error_array();
-            echo json_encode($response);
+            $data['success'] = false;
+            $data['message'] = 'Anauthorised user';
+            echo json_encode($data);
         }
     }
     
@@ -243,6 +296,6 @@ class User extends CI_Controller {
         $User = $this->User_model->get_user_details($id[0]);
         $Json = json_encode($User);
         print_r($Json);
-    }  
+    }
 
 }
