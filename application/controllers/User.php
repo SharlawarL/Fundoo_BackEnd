@@ -31,9 +31,7 @@ class User extends CI_Controller {
     //login User
     public function Login(){
         $this->load->library('form_validation');
-        
-        //$User_data = $this->input->raw_input_stream;
-        
+       
         //getiing datat from the angular
         $_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
@@ -79,7 +77,7 @@ class User extends CI_Controller {
         //load form validation library
         $this->load->library('form_validation');
         //redis cache
-        $redis = $this->redis->config();
+        $redis = $this->redis->conkfig();
 
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
