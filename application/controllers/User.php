@@ -31,6 +31,8 @@ class User extends CI_Controller {
     //login User
     public function Login(){
         $this->load->library('form_validation');
+        //redis cache
+        $redis = $this->redis->config();
        
         //getiing datat from the angular
         $_POST = json_decode(file_get_contents('php://input'),true);
@@ -40,29 +42,31 @@ class User extends CI_Controller {
         if($this->form_validation->run('login'))
         {
             //check user account is exits
-            if(!$this->User_model->check_user($this->table_name,$User_data))
+            $result = $this->User_model->login_user($this->table_name,$User_data);
+            if($result)
             {
-                $response = array("email"=>"Account doesn't exits");
-                echo json_encode($response);
-            }else{
-
-                //passing for the check user present into database.
-                $check_user = $this->User_model->login_user($this->table_name,$User_data);
-            
-                $Token = JWT::encode($check_user, $this->key);
-            
-                //if the user present
-                if($check_user)
+                $data = json_decode(json_encode($result),true);
+                if($data['password'] == $this->input->post('password'))
                 {
+                    //create token
+                    $Token = JWT::encode($data['id'], $this->key);
+
+                    //set it into radis
+                    $redis->set($Token,$Token);
+
                     // responce for the login successfull
                     $response['success'] = true;
                     $response['Token'] = $Token;
                     echo json_encode($response);
                 }else{
-                    //if the password is incurrect
+                    //display password incorrect
                     $response = array("password"=>"password is incorrect");
                     echo json_encode($response);
                 }
+            }else{
+                //email id not fount on database
+                $response = array("email"=>"Account doesn't exits");
+                echo json_encode($response);
             }
         }else{
             // this response for the form validation
@@ -77,7 +81,7 @@ class User extends CI_Controller {
         //load form validation library
         $this->load->library('form_validation');
         //redis cache
-        $redis = $this->redis->config();
+        $redis = $this->redis->conkfig();
 
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);

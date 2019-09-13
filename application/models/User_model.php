@@ -5,10 +5,9 @@ class User_model extends CI_Model {
     function login_user($table_name,$User_data){
 
         $query =  $this->db->get_where($table_name,$User_data);
-        
         foreach ($query->result() as $row)
         {
-            return $row->id;
+            return $row;
         }
     }
 
