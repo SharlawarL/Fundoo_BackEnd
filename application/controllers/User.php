@@ -77,7 +77,7 @@ class User extends CI_Controller {
         //load form validation library
         $this->load->library('form_validation');
         //redis cache
-        $redis = $this->redis->conkfig();
+        $redis = $this->redis->config();
 
         // Data Will to retrive from frond end.
         $_POST = json_decode(file_get_contents('php://input'),true);
