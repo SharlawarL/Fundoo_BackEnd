@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Welcome_test" file="/opt/lampp/htdocs/Fundoo_BackEnd/application/tests/Welcome_test.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="0.101867">
+    <testcase name="test_get_category_list" class="Welcome_test" classname="Welcome_test" file="/opt/lampp/htdocs/Fundoo_BackEnd/application/tests/Welcome_test.php" line="18" assertions="0" time="0.101867">
+      <error type="RuntimeException">Welcome_test::test_get_category_list
+RuntimeException: Unable to locate the model you have specified: Inventory_model
+
+/opt/lampp/htdocs/Fundoo_BackEnd/application/tests/_ci_phpunit_test/replacing/core/Loader.php:358
+/opt/lampp/htdocs/Fundoo_BackEnd/application/tests/Welcome_test.php:14
+/opt/lampp/htdocs/Fundoo_BackEnd/vendor/phpunit/phpunit/phpunit:61
+</error>
+    </testcase>
+  </testsuite>
+</testsuites>
