@@ -286,7 +286,7 @@ class User extends CI_Controller {
     }
 
     //retriving User data
-    function Get_User(){
+    function Get_user(){
         //getiing datat from the angular
         $this->key ="JWT_Token";
         $token = $this->input->get('token',true);

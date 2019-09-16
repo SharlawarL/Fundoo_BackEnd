@@ -1,32 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elder
- * Date: 3/31/19
- * Time: 10:42 AM
- */
+use PHPUnit\Framework\TestCase;
+use PHPUnit\DbUnit\TestCaseTrait;
 
 class Welcome_test extends TestCase
 {
-	public function setUp()
+
+	public function test_case()
 	{
-		$this->resetInstance();
-		$this->CI->load->model('Inventory_model');
-		$this->obj = $this->CI->Inventory_model;
+		$test = 1 + 1;
+
+		$expected_result = 2;
+		
+		$this->assertEquals($test, $expected_result);
 	}
 
-	public function test_get_category_list()
+	public function test_case2()
 	{
-		$expected = [
-			1 => 'Book',
-			2 => 'CD',
-			3 => 'DVD',
-		];
+		$test = 1 + 1;
 
-		$list = $this->obj->get_category_list();
+		$expected_result = 2;
 
-		foreach ($list as $category) {
-			$this->assertEquals($expected[$category->id], $category->name);
-		}
+		$this->assertEquals($test, $expected_result);
 	}
 }

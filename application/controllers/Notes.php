@@ -25,7 +25,7 @@ class Notes extends CI_Controller {
     }
 
     // function for Creating notes
-    function CreateNotes(){
+    function Create_notes(){
         //redis cache
         $redis = $this->redis->config();
 
@@ -67,12 +67,12 @@ class Notes extends CI_Controller {
     }
 
     //retriving notes data
-    function Get_Notes(){
+    function Get_notes(){
         //redis cache
         $redis = $this->redis->config();
 
         //getiing datat from the angular
-        $token = $this->input->get('token',true);
+        $token = $this->input->get('User_token', TRUE);
         
         //if the the token prenent then retirve data
         if($redis->get($token))
@@ -91,7 +91,7 @@ class Notes extends CI_Controller {
         }
     }   
 
-    function Update_Notes()
+    function Update_notes()
     {
         header('Content-Type: application/json'); 
         $Note_data = $this->input->post();
