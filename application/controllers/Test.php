@@ -3,7 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use CodeIgniter\Test\CIDatabaseTestCase;
 
-class Test extends CI_Controller {
+
+class Test extends TestCase {
 
     public function __construct(){
         parent::__construct();
@@ -99,6 +100,16 @@ class Test extends CI_Controller {
         $data['lastname'] = "sharlawar";
         $data['email'] = "sharlawar@gmail.com";
         $data['password'] = "123";
+        $data['cpassword'] = "123";
+
+        // for checking the inserted values
+        echo $this->unit->run($data['firstname'],'is_string',"Check that firstname will be string");  
+        echo $this->unit->run($data['lastname'],'is_string',"Check that Lastname will be string");  
+        echo $this->unit->run($data['email'],'is_string',"Check that Email will be string");  
+        echo $this->unit->run($data['password'],'is_string',"Check that Password will be string");  
+
+        //conform the password
+        echo $this->unit->run($data['password'],$data['cpassword'],"Password match with comform password");
 
         $result = $this->User_model->insert_user('user',$data);
 
@@ -143,6 +154,10 @@ class Test extends CI_Controller {
          */
         $data['id']="166";
         $new_password = "12345";
+        $conform_password = "12345";
+
+        //conform the password
+        echo $this->unit->run($new_password,$conform_password,"Password match with comform password");
 
         $result = $this->User_model->reset_password('user',$data,$new_password);
 
