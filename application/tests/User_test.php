@@ -68,7 +68,7 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
          */
         $User_id = '166';
 
-        $result = $this->User_model->update_mail_status('user',$User_id);
+        $result = $this->CI->User_model->update_mail_status('user',$User_id);
         
         echo $this->assertTrue($result);   
     }
@@ -86,7 +86,7 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
         //conform the password
         echo $this->unit->run($new_password,$conform_password,"Password match with comform password");
 
-        $result = $this->User_model->reset_password('user',$data,$new_password);
+        $result = $this->CI->User_model->reset_password('user',$data,$new_password);
 
         echo $this->assertTrue($result);  
     }
