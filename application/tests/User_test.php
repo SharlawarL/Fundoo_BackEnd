@@ -33,8 +33,14 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
          * which is check into my User_model and return the user data
          */
         $data['email'] = "click@gmail.com";
+        $password = "123";
+        //check for valid email
+        $this->assertRegExp('/^.+\@\S+\.\S+$/', $data['email']);
+
         $User_data = $this->CI->User_model->login_user('user',$data);
 
+        $this->assertIsString($password);
+        $this->assertEquals($User_data->password,$password);
         /**
          * Expected result
          */
@@ -54,6 +60,14 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
         $data['email'] = "sharlawar@gmail.com";
         $data['password'] = "123";
 
+        //check firstname and lastname is string
+        $this->assertIsString($data['firstname']);
+        $this->assertIsString($data['lastname']);
+
+        //check for valid email
+        $this->assertRegExp('/^.+\@\S+\.\S+$/', $data['email']);
+
+
         $result = $this->CI->User_model->insert_user('user',$data);
 
         echo $this->assertTrue($result);  
@@ -66,7 +80,7 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
          * The user has been verified there mail
          * let's consider user id 1. this your want to verify mail
          */
-        $User_id = '166';
+        $User_id = '165';
 
         $result = $this->CI->User_model->update_mail_status('user',$User_id);
         
@@ -83,8 +97,7 @@ class MyApp_Tests_DatabaseTestCase extends TestCase
         $new_password = "12345";
         $conform_password = "12345";
 
-        //conform the password
-        echo $this->unit->run($new_password,$conform_password,"Password match with comform password");
+        echo $this->assertEquals($new_password,$conform_password);
 
         $result = $this->CI->User_model->reset_password('user',$data,$new_password);
 
