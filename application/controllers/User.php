@@ -35,9 +35,9 @@ class User extends CI_Controller {
         $redis = $this->redis->config();
        
         //getiing datat from the angular
-        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
-        
+
         //validate user
         if($this->form_validation->run('login'))
         {
@@ -57,6 +57,7 @@ class User extends CI_Controller {
                     // responce for the login successfull
                     $response['success'] = true;
                     $response['Token'] = $Token;
+                    $response['message'] = "Login Successfull";
                     echo json_encode($response);
                 }else{
                     //display password incorrect
@@ -81,10 +82,10 @@ class User extends CI_Controller {
         //load form validation library
         $this->load->library('form_validation');
         //redis cache
-        $redis = $this->redis->conkfig();
+        $redis = $this->redis->config();
 
         // Data Will to retrive from frond end.
-        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
         //validate user
         if($this->form_validation->run('ragister'))
@@ -130,6 +131,7 @@ class User extends CI_Controller {
         //redis cache
         $redis = $this->redis->config();
 
+        $token = $this->post->get($token);
         //get redies cache value
         $get_token = $redis->get($token);
         if($get_token != null)
@@ -158,9 +160,11 @@ class User extends CI_Controller {
         // response of verification
         if($verification)
         {
+            $data['success'] = true;
             // Success message shown into Login Page
             header('Location: http://localhost:4200/login?success=true');  
         }else{
+            $data['success'] = false;
             // Failed message shown into Login Page
             header('Location: http://localhost:4200/login?success=false');
         }
@@ -213,7 +217,7 @@ class User extends CI_Controller {
         $this->load->library('form_validation');
 
         // Data Will to retrive from frond end.
-        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$_POST = json_decode(file_get_contents('php://input'),true);
         $User_data = $this->input->post();
         $token = $this->input->post('resetToken');
 
@@ -235,10 +239,11 @@ class User extends CI_Controller {
                     
                     $email = $decodedData['email'];
                     $firstname = $decodedData['firstname'];
+                    $new_password = $this->input->post('password');
 
                     //QUery for update the password
-                    $query= $this->User_model->reset_password($this->table_name,$decodedData,$User_data = $this->input->post('password'));
-
+                    $query= $this->User_model->reset_password($this->table_name,$decodedData,$new_password);
+                    
                     if($query)
                     {
                         $data['success'] = true;
@@ -265,7 +270,7 @@ class User extends CI_Controller {
     function check_reset_token(){
 
         // Data Will to retrive from frond end.
-        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$_POST = json_decode(file_get_contents('php://input'),true);
         //$User_data = $this->input->post();
 
         $token = $this->input->post('token');
