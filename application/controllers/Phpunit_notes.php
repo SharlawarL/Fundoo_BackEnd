@@ -6,11 +6,13 @@ use PHPUnit\Framework\TestCase;
 class User_test extends TestCase
 {
     protected $client;
+    public $user_id;
     protected function setUp()
     {
         $this->client = new GuzzleHttp\Client([
             'base_uri' => 'http://localhost/'
         ]);
+        $this->user_id = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjE2NSI.RgkCnzdvfHbuAqCoQKfqr-XElzmOSrNgLMFL4RBt_RU";
     }
 
     //test case for create notes
@@ -20,7 +22,7 @@ class User_test extends TestCase
         $response = $this->client->post('Fundoo_BackEnd/Notes/Create_notes',
         [
             'form_params' => [
-                'user_id'=>'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjE2NSI.RgkCnzdvfHbuAqCoQKfqr-XElzmOSrNgLMFL4RBt_RU',
+                'user_id'=> $user_id,
                 'title' => 'PHPunit',
                 'Notes' => 'Test the test case for Notes',
                 'reminder' => ''
@@ -36,11 +38,11 @@ class User_test extends TestCase
     public function test_getnotes()
     {
         //send post request to the Create Note API
-        $response = $this->client->get('Fundoo_BackEnd/Notes/Get_notes/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.IjE2NSI.RgkCnzdvfHbuAqCoQKfqr-XElzmOSrNgLMFL4RBt_RU');
+        $response = $this->client->get('Fundoo_BackEnd/Notes/Get_notes/'.$this->user_id);
         $data = json_decode($response->getBody(), true);
-        echo $response->getBody();
+
         // response success message will be check
-        $this->assertEquals(1, $data['success']);
+        $this->assertIsArray($data);
 
     }
 
