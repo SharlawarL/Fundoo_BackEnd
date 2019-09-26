@@ -65,4 +65,94 @@ class User_test extends TestCase
         $this->assertEquals(1, $data['success']);
     }
     
+    //test case for update reminder date
+    function test_updatereminderdate()
+    {
+        //send post request to the update reminder
+        $response = $this->client->post('Fundoo_BackEnd/Notes/Update_reminderdate',
+        [
+            'form_params' => [
+                'token' => $this->user_id,
+                'note_id'=>'48',
+                'rdate' => '26/09/2019'
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        echo $response->getBody();
+        // response success message will be check
+        $this->assertEquals(1, $data['success']);   
+    }
+
+
+    //test case for update color
+    function test_updatecolor()
+    {
+        //send post request to the update color
+        $response = $this->client->post('Fundoo_BackEnd/Notes/Update_color',
+        [
+            'form_params' => [
+                'token' => $this->user_id,
+                'note_id'=>'48',
+                'color' => 'red'
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        echo $response->getBody();
+        // response success message will be check
+        $this->assertEquals(1, $data['success']);   
+    }
+
+    //test case for add to trash
+    function test_addtrash()
+    {
+        //send post request to the add into trash
+        $response = $this->client->post('Fundoo_BackEnd/Notes/add_trash',
+        [
+            'form_params' => [
+                'token' => $this->user_id,
+                'note_id'=>'48',
+                'is_trash' => '1'
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        echo $response->getBody();
+        // response success message will be check
+        $this->assertEquals(1, $data['success']);   
+    }
+
+    //test case for add to archive
+    function test_addarchive()
+    {
+        //send post request to the add into archive
+        $response = $this->client->post('Fundoo_BackEnd/Notes/add_archive',
+        [
+            'form_params' => [
+                'token' => $this->user_id,
+                'note_id'=>'48',
+                'is_archive' => '1'
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        echo $response->getBody();
+        // response success message will be check
+        $this->assertEquals(1, $data['success']);   
+    }
+
+    //test case for get to archive
+    function test_getarchive()
+    {
+        //send post request to the archive
+        $response = $this->client->post('Fundoo_BackEnd/Notes/add_archive',
+        [
+            'form_params' => [
+                'token' => $this->user_id,
+                'note_id'=>'48',
+                'is_archive' => '0'
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+
+        // response success message will be check
+        $this->assertIsArray($data);
+    }
 }
