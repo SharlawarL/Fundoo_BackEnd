@@ -73,12 +73,12 @@ class Notes extends CI_Controller {
     }
 
     //retriving notes data
-    function Get_notes(){
+    function Get_notes($token){
         //redis cache
         $redis = $this->redis->config();
 
         //getiing datat from the angular
-        $token = $this->input->get('User_token', TRUE);
+        //$token = $this->input->get('User_token', TRUE);
         
         //if the the token prenent then retirve data
         if($redis->get($token))
@@ -88,6 +88,12 @@ class Notes extends CI_Controller {
             $id = (array) $jwtToken_decode;
             //getting from database
             $Notes = $this->Notes_Model->get_Notes($id[0]);
+
+            // $this->output
+            //     ->set_status_header(200)
+            //     ->set_content_type('application/json', 'utf-8')
+            //     ->set_output(json_encode($Notes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            //     ->_display();
             $Json = json_encode($Notes);
             print_r($Json);
         }else{
@@ -95,6 +101,11 @@ class Notes extends CI_Controller {
             $data['success'] = false;
             $data['message'] = 'Anuthorised User';
             echo json_encode($data);
+            // $this->output
+            //     ->set_status_header(401)
+            //     ->set_content_type('application/json', 'utf-8')
+            //     ->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            //     ->_display();
         }
     }   
 
@@ -420,8 +431,7 @@ class Notes extends CI_Controller {
             $jwtToken_decode = JWT::decode($token, "", array('HS256'));
             $id = (array) $jwtToken_decode;
             //getting from database
-            //$Notes = $this->Notes_Model->get_labels($id[0]);
-            $Notes = $this->Notes_Model->with('lebel_id');
+            $Notes = $this->Notes_Model->get_labels($id[0]);
             $Json = json_encode($Notes);
             print_r($Json);
         }else{

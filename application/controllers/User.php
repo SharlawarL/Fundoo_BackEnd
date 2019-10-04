@@ -20,6 +20,8 @@ class User extends CI_Controller {
         $this->table_name = 'user';
         $this->key ="JWT_Token";
         $this->load->library('redis');
+        $this->load->helper(array('form', 'url'));
+        $this->load->library('upload');
         
 	}
 
@@ -35,7 +37,8 @@ class User extends CI_Controller {
         $redis = $this->redis->config();
        
         //getiing datat from the angular
-        $_POST = json_decode(file_get_contents('php://input'),true);
+        //$_POST = json_decode(file_get_contents('php://input'),true);
+        header('Content-Type: application/json'); 
         $User_data = $this->input->post();
         
         //validate user
@@ -58,21 +61,41 @@ class User extends CI_Controller {
                     $response['success'] = true;
                     $response['Token'] = $Token;
                     $response['message'] = "Login Successfull";
-                    echo json_encode($response);
+                    $this->output
+                            ->set_status_header(200)
+                            ->set_content_type('application/json', 'utf-8')
+                            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                            ->_display();
+                            exit;
                 }else{
                     //display password incorrect
                     $response = array("password"=>"password is incorrect");
-                    echo json_encode($response);
+                    $this->output
+                            ->set_status_header(200)
+                            ->set_content_type('application/json', 'utf-8')
+                            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                            ->_display();
+                            exit;
                 }
             }else{
                 //email id not fount on database
                 $response = array("email"=>"Account doesn't exits");
-                echo json_encode($response);
+                $this->output
+                            ->set_status_header(200)
+                            ->set_content_type('application/json', 'utf-8')
+                            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                            ->_display();
+                            exit;
             }
         }else{
             // this response for the form validation
             $response = $this->form_validation->error_array();
-            echo json_encode($response);
+            $this->output
+                            ->set_status_header(404)
+                            ->set_content_type('application/json', 'utf-8')
+                            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                            ->_display();
+                            exit;
         }
     }
 
@@ -305,4 +328,81 @@ class User extends CI_Controller {
         print_r($Json);
     }
 
+    //social data
+    function Social_login()
+    {
+        //redis cache
+        $redis = $this->redis->config();
+
+        header('Content-Type: application/json'); 
+        $User_data = $this->input->post();
+
+        $check['email'] = $User_data['email'];
+        // get ID for check already present
+        $id = $this->User_model->get_ID($this->table_name,$check);
+
+        if(!$id)
+        {
+            // inserting into the table
+            $this->User_model->insert_user($this->table_name,$User_data);
+        }
+        
+        // getting ID
+        $id = $this->User_model->get_ID($this->table_name,$User_data);
+
+        //creating JWT token
+        $jwtToken = JWT::encode($id, $this->key);
+
+        //set it into radis
+        $redis->set($jwtToken,$jwtToken);
+
+        // // responce for the login successfull
+        $response['success'] = true;
+        $response['Token'] = $jwtToken;
+        $response['message'] = "Login Successfull";
+
+        $this->output
+                ->set_status_header(200)
+                ->set_content_type('application/json', 'utf-8')
+                ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+                ->_display();
+                exit;
+    }
+
+    // change photo 
+    function Change_photo()
+    {
+        //redis cache
+        $redis = $this->redis->config();
+
+        header('Content-Type: application/json'); 
+        $photo_data = $this->input->post();
+
+        //for image
+        print_r($photo_data);
+
+        $config = array(
+            'upload_path' => "./uploads/",
+            'allowed_types' => "gif|jpg|png|jpeg|pdf",
+            'overwrite' => TRUE,
+            //'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+            // 'max_height' => "768",
+            // 'max_width' => "1024"
+        );
+        $this->load->library('upload', $config);
+        
+        $this->upload->initialize($config);
+
+        if($this->upload->do_upload('photo'))
+        {
+            $data = array('upload_data' => $this->upload->data());
+            echo "Success";
+        }else
+        {
+            $error = array('error' => $this->upload->display_errors());
+            echo "rooro";
+        }
+    }
+
 }
+

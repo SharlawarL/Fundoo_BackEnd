@@ -1,9 +1,18 @@
 <?php
 
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+
+/** @Entity **/
 class Notes_Model extends CI_Model {
 
     // ********** Performing notes operation ***************
 
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="Notes")
+     * @ORM\GeneratedValue
+     */
     //for inserting data
     function insertNote($NotesData)
     {
@@ -111,6 +120,11 @@ class Notes_Model extends CI_Model {
 
     // ************ Adding Lebels to the Notes ******************
 
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="label")
+     * @ORM\GeneratedValue
+     */
     //inserted the label
     function add_lebel($lebel_data)
     {
@@ -154,6 +168,10 @@ class Notes_Model extends CI_Model {
         return $result;
     }
 
+    /**
+     * @ManyToMany(targetEntity="Group")
+     * @OrderBy({"id" = "lebelnotes"})
+     **/
     // delete lebels
     function delete_lebel($id)
     {

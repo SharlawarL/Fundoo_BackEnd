@@ -1,4 +1,8 @@
 <?php
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+
+/** @Entity **/
 class User_model extends CI_Model {
 
     //check for the login user
