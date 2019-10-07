@@ -107,7 +107,45 @@ class Notes extends CI_Controller {
             //     ->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
             //     ->_display();
         }
-    }   
+    }
+    
+    
+    //retriving notes data
+    function Get_total_notes($token){
+        //redis cache
+        $redis = $this->redis->config();
+
+        //getiing datat from the angular
+        //$token = $this->input->get('User_token', TRUE);
+        
+        //if the the token prenent then retirve data
+        if($redis->get($token))
+        {
+            //decoding the JWT token
+            $jwtToken_decode = JWT::decode($token, "", array('HS256'));
+            $id = (array) $jwtToken_decode;
+            //getting from database
+            $Notes = $this->Notes_Model->get_total_notes($id[0]);
+
+            // $this->output
+            //     ->set_status_header(200)
+            //     ->set_content_type('application/json', 'utf-8')
+            //     ->set_output(json_encode($Notes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            //     ->_display();
+            $Json = json_encode($Notes);
+            print_r($Json);
+        }else{
+            //return value to the frontend
+            $data['success'] = false;
+            $data['message'] = 'Anuthorised User';
+            echo json_encode($data);
+            // $this->output
+            //     ->set_status_header(401)
+            //     ->set_content_type('application/json', 'utf-8')
+            //     ->set_output(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            //     ->_display();
+        }
+    }
 
     //updating notes
     function Update_notes()

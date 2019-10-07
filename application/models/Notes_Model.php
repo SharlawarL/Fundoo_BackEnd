@@ -22,6 +22,15 @@ class Notes_Model extends CI_Model {
     // for retriving the notes
     function get_Notes($id){
         $this->db->where('user_id',$id);
+        $this->db->where('is_trash','0');
+        $this->db->where('is_archive','0');
+        $Notes = $this->db->get('Notes');
+        return $Notes->result_array();
+    }
+
+    // for retriving the notes
+    function get_total_notes($id){
+        $this->db->where('user_id',$id);
         $Notes = $this->db->get('Notes');
         return $Notes->result_array();
     }
