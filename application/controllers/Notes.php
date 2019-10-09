@@ -599,4 +599,36 @@ class Notes extends CI_Controller {
          }
     }
 
+    // Drag and drop    
+    function Drag_drop()
+    {
+        //header('Content-Type: application/json'); 
+        $_POST = json_decode(file_get_contents('php://input'),true);
+        $Note_data = $this->input->post();
+
+        //print_r($Note_data);
+        for($i=0;$i< count($Note_data);$i++)
+        {
+            $note_id = $Note_data[$i]['note_id'];
+            $index_no  = $Note_data[$i]['index_no'];
+            $result = $this->Notes_Model->update_index($note_id,$index_no);
+
+        }
+        
+        // $result = $this->Notes_Model->update_index($Note_data);
+ 
+             if($result)
+             {
+                 //return value to the frontend
+                 $data['success'] = true;
+                 $data['message'] = 'index will be updated..';
+                 echo json_encode($data);
+             }else{
+                 //return value to the frontend
+                 $data['success'] = false;
+                 $data['message'] = 'Error in index operation...';
+                 echo json_encode($data);
+             }
+    }
+
 }
