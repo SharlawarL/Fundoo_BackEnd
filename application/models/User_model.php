@@ -65,5 +65,11 @@ class User_model extends CI_Model {
         return $Notes->result_array();
     }
 
-
+    // update photo
+    public function update_photo($table_name,$id,$img_url)
+    {
+        $this->db->set('photo', $img_url);
+        $this->db->where('id',$id);
+        return $this->db->update($table_name);   
+    }
 }

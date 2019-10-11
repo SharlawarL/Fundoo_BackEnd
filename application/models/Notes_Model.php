@@ -24,6 +24,7 @@ class Notes_Model extends CI_Model {
         $this->db->where('user_id',$id);
         $this->db->where('is_trash','0');
         $this->db->where('is_archive','0');
+        $this->db->order_by("index_no", "asc");
         $Notes = $this->db->get('Notes');
         return $Notes->result_array();
     }
@@ -201,6 +202,17 @@ class Notes_Model extends CI_Model {
         );
         $this->db->where('lebel_id',$lebel_data['lebel_id']);
         $result = $this->db->update('lebel',$data);
+        return $result;
+    }
+
+    //updateting lebel
+    function update_index($note_id,$index_no)
+    {
+        $data = array(
+            'index_no' => $index_no
+        );
+        $this->db->where('note_id',$note_id);
+        $result = $this->db->update('Notes',$data);
         return $result;
     }
 

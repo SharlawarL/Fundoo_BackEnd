@@ -22,6 +22,7 @@ class User extends CI_Controller {
         $this->load->library('redis');
         $this->load->helper(array('form', 'url'));
         $this->load->library('upload');
+        $this->load->library('cloudinarylib');
         
 	}
 
@@ -372,36 +373,57 @@ class User extends CI_Controller {
     // change photo 
     function Change_photo()
     {
-        //redis cache
-        $redis = $this->redis->config();
 
-        header('Content-Type: application/json'); 
-        $photo_data = $this->input->post();
+         //redis cache
+         $redis = $this->redis->config();
+ 
+         
+        $postdata = file_get_contents("php://input");
 
-        //for image
-        print_r($photo_data);
+        $Photo_data = json_decode($postdata);
 
-        $config = array(
-            'upload_path' => "./uploads/",
-            'allowed_types' => "gif|jpg|png|jpeg|pdf",
-            'overwrite' => TRUE,
-            //'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
-            // 'max_height' => "768",
-            // 'max_width' => "1024"
-        );
-        $this->load->library('upload', $config);
-        
-        $this->upload->initialize($config);
-
-        if($this->upload->do_upload('photo'))
+        //checking that token will into the redius
+        if($redis->get($Photo_data->token))
         {
-            $data = array('upload_data' => $this->upload->data());
-            echo "Success";
-        }else
-        {
-            $error = array('error' => $this->upload->display_errors());
-            echo "rooro";
+            //decoding the token
+            $jwtToken_decode = JWT::decode($Photo_data->token, $this->key, array('HS256'));
+            $id = (array) $jwtToken_decode;
+
+            $Cloudinary_data = \Cloudinary\Uploader::upload($Photo_data->photo,array("folder" => "fundoo/"));
+
+            $img_src = $Cloudinary_data['url'];
+
+            $result = $this->User_model->update_photo($this->table_name,$id[0],$img_src);
+
+            if($result)
+            {
+                // responce for the login successfull
+                $code = "200";
+                $response['success'] = true;
+                $response['Token'] = $Photo_data->token;
+                $response['message'] = "Photo update Successfull";
+            }else{
+                // responce for the login successfull
+                $code = "400";
+                $response['success'] = false;
+                $response['Token'] = $Photo_data->token;
+                $response['message'] = "Photo update failed";
+            }
+
+        }else{
+            // responce for the login successfull
+            $code = "400";
+            $response['success'] = false;
+            $response['Token'] = $Photo_data->token;
+            $response['message'] = "Unauthorized user";
         }
+        $this->output
+            ->set_status_header($code)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            ->_display();
+            exit;
+
     }
 
 }
