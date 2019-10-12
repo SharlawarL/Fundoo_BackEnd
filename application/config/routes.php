@@ -11,6 +11,7 @@ $route['Register'] = 'User/Register';
 $route['Apply_forgot'] = 'User/Apply_forgot';
 $route['Reset_password'] = 'User/Reset_password';
 $route['check_reset_token'] = 'User/check_reset_token';
+$route['Firebase_notification'] = 'Firebase_notification/index';
 
 
 //for notes

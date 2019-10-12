@@ -36,6 +36,12 @@ class Notes_Model extends CI_Model {
         return $Notes->result_array();
     }
 
+    // get notes details
+    function total_notes(){
+        $Notes = $this->db->get('Notes');
+        return $Notes->result_array();
+    }
+
     // for updating the notes
     function update($Notes_data)
     {

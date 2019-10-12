@@ -15,6 +15,7 @@ class Notes extends CI_Controller {
 		parent::__construct();
 		$this->load->database();
         $this->load->model('Notes_Model');
+        $this->load->model('User_model');
         //load redis cache
         $this->load->library('redis');
         //load the Doctrine file
@@ -183,6 +184,18 @@ class Notes extends CI_Controller {
         //checking that token will into the redius
         if($redis->get($Note_data['token']))
         {
+            // update the firebase token
+            $jwtToken_decode = JWT::decode($Note_data['token'], "", array('HS256'));
+            $id = (array) $jwtToken_decode;
+
+            //parameter for update token
+            $user_id = $id[0];
+            $Firebase_token = $Note_data['firebase_token'];
+
+            //Api for update token
+            $this->User_model->update_firebase_token($user_id,$Firebase_token);
+
+            //updating Notes Reminder
             $result = $this->Notes_Model->update_reminder($Note_data);
 
             if($result)

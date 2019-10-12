@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"kenjis/codeigniter-doctrine": "1.0.x@dev"
+		"kenjis/codeigniter-doctrine": "1.0.x@dev",
+		"cloudinary/cloudinary_php": "^1.15"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

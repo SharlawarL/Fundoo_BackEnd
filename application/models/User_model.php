@@ -65,11 +65,25 @@ class User_model extends CI_Model {
         return $Notes->result_array();
     }
 
+    // get user details
+    function total_user(){
+        $Notes = $this->db->get('user');
+        return $Notes->result_array();
+    }
+
     // update photo
     public function update_photo($table_name,$id,$img_url)
     {
         $this->db->set('photo', $img_url);
         $this->db->where('id',$id);
         return $this->db->update($table_name);   
+    }
+
+    //updating Firebase token
+    public function update_firebase_token($user_id,$firebase_token)
+    {
+        $this->db->set('Firebase_token', $firebase_token);
+        $this->db->where('id',$user_id);
+        $this->db->update('user');
     }
 }
