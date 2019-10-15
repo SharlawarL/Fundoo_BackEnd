@@ -11,7 +11,7 @@
 		"source": "https://github.com/bcit-ci/CodeIgniter"
 	},
 	"require": {
-		"php": ">=5.3.7",
+		"php": ">=7.2.19",
 		"kenjis/codeigniter-doctrine": "1.0.x@dev",
 		"cloudinary/cloudinary_php": "^1.15"
 	},
