@@ -8,6 +8,8 @@ header('Content-Type: application/json');
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require APPPATH.'/libraries/JWT.php';
+//require_once(APPPATH."models/Doctrine_Notes.php");
+
 
 class Notes extends CI_Controller {
 
@@ -20,13 +22,12 @@ class Notes extends CI_Controller {
         $this->load->library('redis');
         //load the Doctrine file
         $this->load->library('Doctrine');
+        //$this->load->library('Doctrine_Notes');
     }
     function index()
     {
-        //$this->load->view('Home_page');
-        $id = '165';
-        $Notes = $this->Notes_Model->get_labels_option($id);
-        print_r($Notes);
+        // echo "Notes BackEnd";    
+        // $this->em = $this->doctrine->em;
 
     }
 
