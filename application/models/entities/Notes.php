@@ -6,58 +6,58 @@ use Doctrine\ORM\Mapping as ORM;
  * Notes
  * @ORM\Entity
  * @ORM\Table(name="Notes")
- * @ORM\HasLifecycleCallbacks
  */
 class Notes
 {
     /** 
-     * @ORM\Note_Id
-     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(name = "note_id", type="integer")
      * @ORM\GeneratedValue
      */
     protected $note_id;
-    /** 
-     * @ORM\User_Id
-     * @ORM\Column(type="integer")
+    /**
+     * @ORM\Column(name = "user_id",type="integer")
      * @ORM\GeneratedValue
      */
     protected $user_id;
     /** 
-     * @ORM\title
-     * @ORM\Column(type="varchar") 
+     * @ORM\Column(name = "title") 
      */
     protected $title;
     /** 
-     * @ORM\Notes
-     * @ORM\Column(type="varchar") 
+     * @ORM\Column(name = "Notes") 
      */
     protected $Notes;
     /** 
-     * @ORM\reminder
-     * @ORM\Column(type="varchar") 
+     * @ORM\Column(name = "reminder") 
      */
     protected $reminder;
     /** 
-     * @ORM\index_no
-     * @ORM\Column(type="integer") 
+     * @ORM\Column(name = "index_no",type="integer") 
      */
     protected $index_no;
     /** 
-     * @ORM\is_trash
-     * @ORM\Column(type="integer") 
+     * @ORM\Column(name = "is_trash",type="integer") 
      */
     protected $is_trash;
     /** 
-     * @ORM\is_archive
-     * @ORM\Column(type="integer") 
+     * @ORM\Column(name = "is_archive",type="integer") 
      */
     protected $is_archive;
     /** 
-     * @ORM\Color
-     * @ORM\Column(type="varchar") 
+     * @ORM\Column(name = "color") 
      */
     protected $color;
 
+     /**
+     * Set user_id
+     *
+     * @param string $user_id
+     */
+    public function setNoteId($note_id)
+    {
+        $this->note_id = $note_id;
+    }
      /**
      * Get Note id
      *
@@ -171,11 +171,11 @@ class Notes
      /**
      * Set trash
      *
-     * @param string $trash
+     * @param integer $trash
      */
-    public function setTrash($trash)
+    public function setTrash($is_trash)
     {
-        $this->trash = $trash;
+        $this->is_trash = $is_trash;
     }
 
      /**
@@ -193,9 +193,9 @@ class Notes
      *
      * @param string $archive
      */
-    public function setArchive($archive)
+    public function setArchive($is_archive)
     {
-        $this->archive = $archive;
+        $this->is_archive = $is_archive;
     }
 
     /**
